@@ -7,7 +7,7 @@ using UnityEngine;
 
 public static partial class LocalDB
 {
-    public static Dictionary<string, object> dbRootRef = null;
+    public static Dictionary<string, object> dbRootRef = new Dictionary<string, object>();
     public static Dictionary<string, object> dbBooksRef = null;
     public static Dictionary<string, object> dbChaptersRef = null;
 
@@ -16,17 +16,15 @@ public static partial class LocalDB
 
     public static void Initialize(Action<DBCreationStatus> OnDBInitialized)
     {
-        object lockObject = new();
-        lock (lockObject)
+        lock (dbRootRef)
         {
             if (IO.IsDBCreated() == false)
             {
-                dbRootRef = new Dictionary<string, object>();
+
                 dbBooksRef = new Dictionary<string, object>();
                 dbChaptersRef = new Dictionary<string, object>();
                 dbRootRef.Add("books", dbBooksRef);
                 dbRootRef.Add("chapters", dbChaptersRef);
-                PlayerPrefs.SetInt("InitializeLocalDB", 1);
                 //Set initial data
                 IO.Save(dbRootRef);
 
@@ -52,12 +50,12 @@ public static partial class LocalDB
         dbRootRef["chapters"] = dbChaptersRef;
 
 
-       
+
     }
 
     #endregion
 
-   
+
 
 }
 
