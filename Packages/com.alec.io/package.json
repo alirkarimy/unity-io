@@ -1,6 +1,6 @@
 {
   "name": "com.alec.io",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "displayName": "Save&Load System",
   "description": "A system for saving and loading data in a json file in Unity projects",
   "unity": "6000.0",
