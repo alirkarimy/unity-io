@@ -8,7 +8,7 @@ public class LocalDBTest : MonoBehaviour
     {
         LocalDB.Initialize((result) => { });
         yield return new WaitForSeconds(1);
-        LocalDB.Queries.UpdateBook("Coexist", new System.Collections.Generic.Dictionary<string, object> { { "Coexist", "Coexist body" } });
+        //LocalDB.Queries.UpdateBook("Coexist", new System.Collections.Generic.Dictionary<string, object> { { "Coexist", "Coexist body" } });
     }
 
 }

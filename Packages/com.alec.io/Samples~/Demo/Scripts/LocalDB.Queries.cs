@@ -1,101 +1,58 @@
 
+using Alec.App.AppBootstrap;
+using Booali.Network.Api;
 using com.alec.io;
 using Newtonsoft.Json;
-using System.Collections.Generic;
+using Palgam.PalgamApp.Scripts.RedesignScripts.PalgamWebRequest.Sockets.GameSockets;
+using System;
+using UnityEngine;
 
 public static partial class LocalDB
 {
-    internal static class Queries
+    internal static partial class Path
+    {
+        internal static readonly string USERDATA_DB_PATH = "userdata";
+        internal static readonly string APPSTATE_DB_PATH = "appstate";
+        internal static readonly string SAMPLE_MATCH_RESPONSE_PATH = "samplematchresponse";
+        internal static readonly string LOADOUT_PATH = "player_loadout";
+    }
+    internal static partial class Queries
     {
 
         #region Book Data
 
-        public static void UpdateBook(string bookID, Dictionary<string, object> bookEntry)
+        internal static void UpdateAppState(AppState appstate)
         {
-            if (dbRootRef == null) Initialize((result) => { });
+            if (appstate == null) return;
 
-            if (dbBooksRef.ContainsKey(bookID))
-            {
-                dbBooksRef[bookID] = JsonConvert.SerializeObject(bookEntry, Formatting.Indented);
-            }
-            else
-            {
-                dbBooksRef.Add(bookID, JsonConvert.SerializeObject(bookEntry, Formatting.Indented));
-            }
-            IO.Save(dbRootRef);
+            IO.Save(appstate, Path.APPSTATE_DB_PATH);
+        }
+        internal static AppState GetAppState()
+        {
+            if (IO.IsDBCreated(Path.APPSTATE_DB_PATH) == false) return null;
+
+            IO.Load(out string appstateJSON, Path.APPSTATE_DB_PATH);
+            AppState appstateModel = JsonConvert.DeserializeObject<AppState>(appstateJSON);
+            appstateModel.IsNetworkInitialized = false;
+
+            return appstateModel;
+        }
+       
+        internal static MatchRoot GetSampleMatchResponse()
+        {
+            //if (dbRootRef == null) Initialize((result) => { });
+            if (IO.HasResourcesDB(Path.SAMPLE_MATCH_RESPONSE_PATH) == false) { Debug.Log(134343); return null; }
+
+            IO.LoadFromResources(out string settingsJSON, Path.SAMPLE_MATCH_RESPONSE_PATH);
+            MatchRoot samplematch = JsonConvert.DeserializeObject<MatchRoot>(settingsJSON);
+            return samplematch;
         }
 
-        internal static Book.Model GetBookWithID(string bookID)
-        {
-            if (dbRootRef == null) Initialize((result) => { });
-
-            Book.Model bookEntry = null;
-            if (dbBooksRef.ContainsKey(bookID))
-            {
-                bookEntry = new Book.Model(dbBooksRef[bookID].ToString());
-            }
-            return bookEntry;
-        }
+        
         #endregion
 
-        #region Chapters Data
-     
-        public static void UpdateChapter(string chapterId, Dictionary<string, object> chapterEntry)
-        {
-            if (dbRootRef == null) Initialize((result) => { });
 
-            if (dbChaptersRef.ContainsKey(chapterId))
-            {
-                dbChaptersRef[chapterId] = JsonConvert.SerializeObject(chapterEntry, Formatting.Indented);
-            }
-            else
-            {
-                dbChaptersRef.Add(chapterId, JsonConvert.SerializeObject(chapterEntry, Formatting.Indented));
-            }
-            IO.Save(dbRootRef);
-        }
-        internal static Chapter.Model GetChapterWithID(string chapterId)
-        {
-            if (dbRootRef == null) Initialize((result) => { });
-
-            Chapter.Model chapterModel = null;
-            if (dbChaptersRef.ContainsKey(chapterId))
-            {
-                chapterModel = new Chapter.Model(dbChaptersRef[chapterId].ToString());
-            }
-            return chapterModel;
-        }
-        #endregion
-    }
-}
-
-public class Book
-{
-    public class Model
-    {
-        public Model(string json)
-        {
-
-        }
-        public Model(Dictionary<string, object> dictionary)
-        {
-
-        }
     }
 }
 
 
-public class Chapter
-{
-    public class Model
-    {
-        public Model(string json)
-        {
-
-        }
-        public Model(Dictionary<string, object> dictionary)
-        {
-
-        }
-    }
-}
